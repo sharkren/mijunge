@@ -31,7 +31,7 @@ app.use(
         user: 'map_user', // your mysql user
         password : 'map_user', // your mysql password
         port : 3306, //port mysql
-        database:'test' // your database name
+        database:'user' // your database name
     },'pool') //or single
 );
 
