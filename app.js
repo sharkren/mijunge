@@ -4,13 +4,18 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+// Express를 통한  request 처리 검증 라이브러리 추가
+var expressValidator = require('express-validator');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var connection = require('express-myconnection');
 var mysql = require('mysql');
 
+/* global module */
+//var global_module = require('./public/javascripts/global');
+
 var app = express();
+//app.use('global_module', global_module);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,6 +29,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* expressValidator 모듈 사용 추가 */
+app.use(expressValidator());
+
 // mysql config
 app.use(
     connection(mysql,{
@@ -31,7 +39,7 @@ app.use(
         user: 'map_user', // your mysql user
         password : 'map_user', // your mysql password
         port : 3306, //port mysql
-        database:'right' // your database name
+        database:'mijunge' // your database name
     },'pool') //or single
 );
 
@@ -44,32 +52,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-/*if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
-*/
-
 
 // error handlers
 app.use(function(err, req, res, next) {
