@@ -25,6 +25,8 @@ router.post('/add', function(req, res, next) {
 
   if (!errors) {
 
+    // try-catch는 node내의 동기식 코드에 대해서만 작동하므로 Node내의 다른
+    // 비동기 코드에서는 try-catch대신에 프라미스를 이용할수 있음
     try {
       v_email = req.sanitize( 'email' ).escape().trim();
       v_password = req.sanitize( 'password' ).escape().trim();
