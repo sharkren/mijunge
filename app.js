@@ -4,19 +4,30 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-// Express를 통한  request 처리 검증 라이브러리 추가
-var expressValidator = require('express-validator');
-var routes = require('./routes/index');
-var users = require('./routes/users');
+
+/* method가 다른 동일한 api 허용 모듈 추가 */
+// ex) get '/edit/(:id)'
+//     put '/edit/(:id)'
+//     delete '/edit/(:id)'
+var methodOverride = require('method-override');
+
+/* mysql connection module */
 var connection = require('express-myconnection');
 var mysql = require('mysql');
 
-/* global module */
-//var global_module = require('./public/javascripts/global');
+/* Express를 통한  request unit 테스트 추가 */
+var expressValidator = require('express-validator');
+/* 응답 본문의 사이즈를 줄여 앱의 속도를 높이기 위한 압축 미들웨어 추가 */
+var compression = require('compression');
+
+/* app에서 사용할 router 선언 */
+var routes = require('./routes/index');
+var users = require('./routes/users');
+
 
 var app = express();
-//app.use('global_module', global_module);
-
+/* compression을 app에 추가 */
+app.use(compression());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -31,6 +42,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 /* expressValidator 모듈 사용 추가 */
 app.use(expressValidator());
+
+/* method override를 위한 사용 세팅 */
+app.use(methodOverride(function(req, res){
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    var method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
+}));
 
 // mysql config
 app.use(
